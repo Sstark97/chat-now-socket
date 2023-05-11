@@ -20,6 +20,26 @@ app.get("/", (req, res) => {
     res.send("<h1>Hello world</h1>");
 });
 
+app.get("/messages", async (req, res) => {
+    const { userId, contactId } = req.query
+
+    const messages = await chatService.getMessages(userId as string, contactId as string)
+
+    if (messages !== null) {
+        return res.status(200).json(messages)
+    }
+})
+
+app.get("/chats", async (req, res) => {
+    const { userId } = req.query
+
+    const chats = await chatService.getAllWithContact(userId as string)
+
+    if (chats !== null) {
+        return res.status(200).json(chats)
+    }
+})
+
 io.on("connection", (socket) => {
     console.log("Connected")
     socket.on("join", async (obj) => {
@@ -35,5 +55,5 @@ io.on("connection", (socket) => {
     })
 })
 
-httpServer.listen(3000);
-console.log("Server running on port 3000")
+httpServer.listen(3001);
+console.log("Server running on port 3001")

@@ -29,6 +29,20 @@ app.get("/", (req, res) => {
     console.log(req);
     res.send("<h1>Hello world</h1>");
 });
+app.get("/messages", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId, contactId } = req.query;
+    const messages = yield chatService.getMessages(userId, contactId);
+    if (messages !== null) {
+        return res.status(200).json(messages);
+    }
+}));
+app.get("/chats", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.query;
+    const chats = yield chatService.getAllWithContact(userId);
+    if (chats !== null) {
+        return res.status(200).json(chats);
+    }
+}));
 io.on("connection", (socket) => {
     console.log("Connected");
     socket.on("join", (obj) => __awaiter(void 0, void 0, void 0, function* () {
