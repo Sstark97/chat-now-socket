@@ -35,4 +35,4 @@ interface ChatRepository {
     delete(): Promise<void>
 }
 
-export type { ChatRepository }
+export type { ChatRepository, MessageSocket}

@@ -1,4 +1,4 @@
-import { ChatRepository, MessageSocket } from "@customTypes/domain"
+import { ChatRepository, MessageSocket } from "../../types/domain"
 
 class ChatService {
     constructor(private readonly chatRepository: ChatRepository) {}

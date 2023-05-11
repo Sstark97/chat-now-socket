@@ -16,6 +16,7 @@ const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const cors_1 = __importDefault(require("cors"));
 const socket_io_1 = require("socket.io");
+const ChatFactory_1 = require("../src/api/factories/ChatFactory");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
@@ -23,18 +24,21 @@ app.use((0, cors_1.default)({
 }));
 const httpServer = (0, http_1.createServer)(app);
 const io = new socket_io_1.Server(httpServer);
+const chatService = ChatFactory_1.ChatFactory.createChatService();
+app.get("/", (req, res) => {
+    console.log(req);
+    res.send("<h1>Hello world</h1>");
+});
 io.on("connection", (socket) => {
     console.log("Connected");
     socket.on("join", (obj) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(obj);
-        // const { userId, contactId } = obj
-        // await chatService.create(userId, contactId)
+        const { userId, contactId } = obj;
+        yield chatService.create(userId, contactId);
     }));
     socket.on("send-message", (obj) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(obj);
-        // const { userId, contactId, message } = obj
-        // const messageInDb = await chatService.sendMessage(userId, contactId, message)
-        // io.emit("receive-message", messageInDb)
+        const { userId, contactId, message } = obj;
+        const messageInDb = yield chatService.sendMessage(userId, contactId, message);
+        io.emit("receive-message", messageInDb);
         io.emit("reload-chats");
     }));
 });

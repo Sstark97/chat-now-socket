@@ -1,4 +1,4 @@
-import { ChatRepository } from "@customTypes/domain"
+import { ChatRepository } from "../../types/domain"
 import { PrismaClient } from "@prisma/client"
 
 class ChatPrismaRepository implements ChatRepository {

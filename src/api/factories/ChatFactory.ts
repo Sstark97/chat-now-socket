@@ -1,5 +1,5 @@
-import ChatPrismaRepository from "@lib/repositories/ChatPrismaRepository"
-import ChatService from "@lib/services/ChatService"
+import ChatPrismaRepository from "../repositories/ChatPrismaRepository"
+import ChatService from "../services/ChatService"
 
 /**
  * @class ChatFactory
