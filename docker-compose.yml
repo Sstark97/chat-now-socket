@@ -2,8 +2,15 @@ version: '3.6'
 services:
   socket-app:
     image: chat-now-socket
-    environment:
-        - PORT=8080
-    restart: always
+    build:
+        context: .
+        dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/app
+    container_name: socket-app
+    expose:
+      - "4000"
     ports:
-      - 8080:80
+      - "4000:4000"
+    command:
+      - npm run start
