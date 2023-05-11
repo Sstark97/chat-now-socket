@@ -8,7 +8,10 @@
     "rootDir": "./",                                  /* Specify the root folder within your source files. */
     "baseUrl": "src",
     "paths": {
-      "@customTypes/*": ["types/*"]
+      "@customTypes/*": ["types/*"],
+      "@factories/*": ["api/factories/*"],
+      "@services/*": ["api/services/*"],
+      "@repositories/*": ["api/repositories/*"],
     },
     "include": ["./src/**/*.ts"],
 
