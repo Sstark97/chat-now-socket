@@ -4,6 +4,8 @@ import cors from "cors";
 import { Server } from "socket.io";
 import { ChatFactory } from "../src/api/factories/ChatFactory"
 
+const port = process.env.PORT || 3001;
+
 const app = express();
 app.use(express.json());
 app.use(
@@ -12,7 +14,11 @@ app.use(
     })
 );
 const httpServer = createServer(app);
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*",
+    }
+});
 const chatService = ChatFactory.createChatService()
 
 app.get("/", (req, res) => {
@@ -55,5 +61,5 @@ io.on("connection", (socket) => {
     })
 })
 
-httpServer.listen(3001);
-console.log("Server running on port 3001")
+httpServer.listen(port);
+console.log(`Server running on port ${port}`)

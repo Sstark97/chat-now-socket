@@ -17,13 +17,18 @@ const http_1 = require("http");
 const cors_1 = __importDefault(require("cors"));
 const socket_io_1 = require("socket.io");
 const ChatFactory_1 = require("../src/api/factories/ChatFactory");
+const port = process.env.PORT || 3001;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
     origin: "*",
 }));
 const httpServer = (0, http_1.createServer)(app);
-const io = new socket_io_1.Server(httpServer);
+const io = new socket_io_1.Server(httpServer, {
+    cors: {
+        origin: "*",
+    }
+});
 const chatService = ChatFactory_1.ChatFactory.createChatService();
 app.get("/", (req, res) => {
     console.log(req);
@@ -56,5 +61,5 @@ io.on("connection", (socket) => {
         io.emit("reload-chats");
     }));
 });
-httpServer.listen(3000);
-console.log("Server running on port 3000");
+httpServer.listen(port);
+console.log(`Server running on port ${port}`);
