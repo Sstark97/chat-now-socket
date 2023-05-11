@@ -8,7 +8,7 @@ COPY package*.json ./
 
 # Install dependencies
 RUN npm install
-RUN npm run start
+
 
 # Bundle app source
 
@@ -16,3 +16,6 @@ COPY . .
 
 # Expose port 3000
 EXPOSE 3000
+
+# Run app
+CMD [ "npm", "start" ]
