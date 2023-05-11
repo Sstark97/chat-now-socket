@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 # Install app dependencies
 COPY package*.json ./
 
-COPY prisma ./prisma/
+COPY prisma ./src/api/prisma/
 
 COPY .env ./
 
