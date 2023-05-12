@@ -16,7 +16,8 @@ const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const cors_1 = __importDefault(require("cors"));
 const socket_io_1 = require("socket.io");
-const ChatFactory_1 = require("../src/api/factories/ChatFactory");
+const ChatFactory_1 = __importDefault(require("./api/factories/ChatFactory"));
+const UserFactory_1 = __importDefault(require("./api/factories/UserFactory"));
 const port = process.env.PORT || 3001;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -29,7 +30,8 @@ const io = new socket_io_1.Server(httpServer, {
         origin: "*",
     }
 });
-const chatService = ChatFactory_1.ChatFactory.createChatService();
+const chatService = ChatFactory_1.default.createChatService();
+const userService = UserFactory_1.default.createUserService();
 app.get("/", (req, res) => {
     console.log(req);
     res.send("<h1>Hello world</h1>");
@@ -57,8 +59,18 @@ io.on("connection", (socket) => {
     socket.on("send-message", (obj) => __awaiter(void 0, void 0, void 0, function* () {
         const { userId, contactId, message } = obj;
         const messageInDb = yield chatService.sendMessage(userId, contactId, message);
+        const user = yield userService.getUserInfo(userId);
+        const { author_id, text } = messageInDb;
+        const { name, image } = user;
+        const notification = {
+            id: author_id,
+            name: name,
+            message: text,
+            image: image !== null && image !== void 0 ? image : ""
+        };
         io.emit("receive-message", messageInDb);
         io.emit("reload-chats");
+        io.emit("notify", notification);
     }));
 });
 httpServer.listen(port);

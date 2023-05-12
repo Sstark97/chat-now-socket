@@ -2,7 +2,9 @@ import express from "express";
 import { createServer } from "http";
 import cors from "cors";
 import { Server } from "socket.io";
-import { ChatFactory } from "../src/api/factories/ChatFactory"
+import ChatFactory from "./api/factories/ChatFactory"
+import UserFactory from "./api/factories/UserFactory";
+import type { UserNotify } from "./types/domain";
 
 const port = process.env.PORT || 3001;
 
@@ -20,6 +22,7 @@ const io = new Server(httpServer, {
     }
 });
 const chatService = ChatFactory.createChatService()
+const userService = UserFactory.createUserService()
 
 app.get("/", (req, res) => {
     console.log(req)
@@ -56,8 +59,19 @@ io.on("connection", (socket) => {
     socket.on("send-message", async (obj) => {
         const { userId, contactId, message } = obj
         const messageInDb = await chatService.sendMessage(userId, contactId, message)
+        const user = await userService.getUserInfo(userId) as UserNotify
+        const { author_id, text} = messageInDb
+        const { name, image } = user
+        const notification = {
+            id: author_id,
+            name: name,
+            message: text,
+            image: image ?? ""
+        }
+
         io.emit("receive-message", messageInDb)
         io.emit("reload-chats")
+        io.emit("notify", notification)
     })
 })
 
