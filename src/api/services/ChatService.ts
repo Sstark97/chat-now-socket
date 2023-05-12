@@ -28,6 +28,7 @@ class ChatService {
                     chat_id: chat.id,
                     id,
                     name: name ?? email,
+                    email,
                     image,
                     status,
                     time: date,

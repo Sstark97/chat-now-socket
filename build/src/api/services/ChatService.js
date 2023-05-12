@@ -36,6 +36,7 @@ class ChatService {
                     chat_id: chat.id,
                     id,
                     name: name !== null && name !== void 0 ? name : email,
+                    email,
                     image,
                     status,
                     time: date,
