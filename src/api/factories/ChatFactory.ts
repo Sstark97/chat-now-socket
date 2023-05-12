@@ -20,4 +20,4 @@ class ChatFactory {
     }
 }
 
-export { ChatFactory }
+export default ChatFactory

@@ -24,6 +24,11 @@ interface MessageSocket {
     author_id: string
 }
 
+interface UserNotify {
+    name: string | null
+    image: string | null
+}
+
 interface ChatRepository {
     getChatId(userId: string, contactId: string): Promise<Chats | null>
     getContactName(contactId: string): Promise<string | null>
@@ -35,4 +40,8 @@ interface ChatRepository {
     delete(): Promise<void>
 }
 
-export type { ChatRepository, MessageSocket}
+interface UserRepository {
+    getUserInfo(userId: string): Promise<UserNotify | null>
+}
+
+export type { ChatRepository, UserRepository, MessageSocket, UserNotify }
