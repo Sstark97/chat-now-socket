@@ -9,13 +9,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @class ChatService
+ * @description Clase para definir el servicio de chats
+ * @property {ChatRepository} chatRepository - Repositorio de chats
+ */
 class ChatService {
     constructor(chatRepository) {
         this.chatRepository = chatRepository;
     }
+    /**
+     * @function sendMessage
+     * @param userId
+     * @param contactId
+     * @param message
+     * @description Envía un mensaje
+     * @returns {Promise<Message>}
+     */
     sendMessage(userId, contactId, message) {
         return this.chatRepository.sendMessage(userId, contactId, message);
     }
+    /**
+     * @function getMessages
+     * @param userId
+     * @param contactId
+     * @description Obtiene los mensajes de un chat
+     * @returns {Promise<Message[]>}
+     */
     getMessages(userId, contactId) {
         return __awaiter(this, void 0, void 0, function* () {
             const chat = yield this.chatRepository.getChatId(userId, contactId);
@@ -23,6 +43,12 @@ class ChatService {
             return chatId ? this.chatRepository.getMessages(chatId) : [];
         });
     }
+    /**
+     * @function getAllWithContact
+     * @param userId
+     * @description Obtiene todos los chats con su contacto
+     * @returns {Promise<UserNotify[]>}
+     */
     getAllWithContact(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             const chats = yield this.chatRepository.getAllWithContact(userId);

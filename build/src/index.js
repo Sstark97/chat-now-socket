@@ -13,17 +13,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const http_1 = require("http");
 const cors_1 = __importDefault(require("cors"));
+const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
+const http_1 = require("http");
 const socket_io_1 = require("socket.io");
 const ChatFactory_1 = __importDefault(require("./api/factories/ChatFactory"));
 const UserFactory_1 = __importDefault(require("./api/factories/UserFactory"));
+const optionsJSDoc = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'ChatNow API',
+            description: 'API para la aplicación de mensajería instantánea ChatNow y servidor de sockets',
+            version: '1.0.0',
+        },
+    },
+    apis: [`${__dirname}/index.js`], // files containing annotations as above
+};
+const openapiSpecification = (0, swagger_jsdoc_1.default)(optionsJSDoc);
 const port = process.env.PORT || 3001;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
     origin: "*",
 }));
+app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(openapiSpecification));
 const httpServer = (0, http_1.createServer)(app);
 const io = new socket_io_1.Server(httpServer, {
     cors: {
@@ -32,23 +47,125 @@ const io = new socket_io_1.Server(httpServer, {
 });
 const chatService = ChatFactory_1.default.createChatService();
 const userService = UserFactory_1.default.createUserService();
+/**
+ * @openapi
+ * /:
+ *   get:
+ *     description: Index route
+ *     responses:
+ *       200:
+ *         description: Returns Hello world
+ */
+// @ts-ignore
 app.get("/", (req, res) => {
-    console.log(req);
     res.send("<h1>Hello world</h1>");
 });
+/**
+ * @openapi
+ *
+ * components:
+ *   schemas:
+ *     Message:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         text:
+ *           type: string
+ *         date:
+ *           type: string
+ *           format: date-time
+ *         chat_id:
+ *           type: integer
+ *         author_id:
+ *           type: integer
+ *
+ * /messages:
+ *   get:
+ *     description: Obtiene los mensajes de un chat
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID del usuario que desea obtener los mensajes
+ *       - in: query
+ *         name: contactId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID del contacto con quien se intercambian los mensajes
+ *     responses:
+ *       '200':
+ *         description: Devuelve los mensajes
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Message'
+ *       '404':
+ *         description: Mensajes no encontrados
+ */
 app.get("/messages", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId, contactId } = req.query;
     const messages = yield chatService.getMessages(userId, contactId);
-    if (messages !== null) {
-        return res.status(200).json(messages);
-    }
+    return messages !== null ? res.status(200).json(messages) : res.status(404).json({ message: "Messages not found" });
 }));
+/**
+ * @openapi
+ *
+ * components:
+ *   schemas:
+ *     Chat:
+ *       type: object
+ *       properties:
+ *         chat_id:
+ *           type: integer
+ *         id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         email:
+ *           type: string
+ *         image:
+ *           type: string
+ *         status:
+ *           type: string
+ *         time:
+ *           type: date
+ *         message:
+ *           type: string
+ *         author_id:
+ *           type: integer
+ *
+ * /chats:
+ *   get:
+ *     description: Obtiene los chats de un usuario
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *           required: true
+ *           description: ID del usuario que desea obtener los chats
+ *     responses:
+ *       '200':
+ *         description: Devuelve los chats
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Chat'
+ *       '404':
+ *         description: Chats no encontrados
+ */
 app.get("/chats", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.query;
     const chats = yield chatService.getAllWithContact(userId);
-    if (chats !== null) {
-        return res.status(200).json(chats);
-    }
+    return chats !== null ? res.status(200).json(chats) : res.status(404).json({ message: "Chats not found" });
 }));
 io.on("connection", (socket) => {
     console.log("Connected");

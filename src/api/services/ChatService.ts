@@ -1,12 +1,32 @@
-import { ChatRepository, MessageSocket } from "../../types/domain"
+import {ChatRepository, ChatWithAll, MessageSocket} from "../../types/domain"
 
+/**
+ * @class ChatService
+ * @description Clase para definir el servicio de chats
+ * @property {ChatRepository} chatRepository - Repositorio de chats
+ */
 class ChatService {
     constructor(private readonly chatRepository: ChatRepository) {}
 
+    /**
+     * @function sendMessage
+     * @param userId {string}
+     * @param contactId {string}
+     * @param message {string}
+     * @description Envía un mensaje
+     * @returns {Promise<Message>}
+     */
     sendMessage(userId: string, contactId: string, message: string) {
         return this.chatRepository.sendMessage(userId, contactId, message)
     }
 
+    /**
+     * @function getMessages
+     * @param userId {string}
+     * @param contactId {string}
+     * @description Obtiene los mensajes de un chat
+     * @returns {Promise<Message[]>}
+     */
     async getMessages(userId: string, contactId: string) {
         const chat = await this.chatRepository.getChatId(userId, contactId)
         const chatId = chat?.chat_id
@@ -14,7 +34,13 @@ class ChatService {
         return chatId ? this.chatRepository.getMessages(chatId) : []
     }
 
-    async getAllWithContact(userId: string) {
+    /**
+     * @function getAllWithContact
+     * @param userId {string}
+     * @description Obtiene todos los chats con su contacto
+     * @returns {Promise<ChatWithAll[]>}
+     */
+    async getAllWithContact(userId: string): Promise<ChatWithAll[]> {
         const chats = await this.chatRepository.getAllWithContact(userId)
         return await Promise.all(
             chats.map(async (chat) => {
@@ -39,6 +65,13 @@ class ChatService {
         )
     }
 
+    /**
+     * @function create
+     * @param userId {string}
+     * @param contactId {string}
+     * @description Crea un chat
+     * @returns {Promise<Chats | undefined>}
+     */
     async create(userId: string, contactId: string) {
         const chatInCommon = await this.chatRepository.getChatId(userId, contactId)
 
@@ -47,6 +80,11 @@ class ChatService {
         }
     }
 
+    /**
+     * @function delete
+     * @description Elimina un chat
+     * @returns {Promise<void>}
+     */
     delete() {
         this.chatRepository.delete()
     }
