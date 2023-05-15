@@ -20,9 +20,9 @@ class ChatService {
     }
     /**
      * @function sendMessage
-     * @param userId
-     * @param contactId
-     * @param message
+     * @param userId {string}
+     * @param contactId {string}
+     * @param message {string}
      * @description Envía un mensaje
      * @returns {Promise<Message>}
      */
@@ -31,8 +31,8 @@ class ChatService {
     }
     /**
      * @function getMessages
-     * @param userId
-     * @param contactId
+     * @param userId {string}
+     * @param contactId {string}
      * @description Obtiene los mensajes de un chat
      * @returns {Promise<Message[]>}
      */
@@ -45,9 +45,9 @@ class ChatService {
     }
     /**
      * @function getAllWithContact
-     * @param userId
+     * @param userId {string}
      * @description Obtiene todos los chats con su contacto
-     * @returns {Promise<UserNotify[]>}
+     * @returns {Promise<ChatWithAll[]>}
      */
     getAllWithContact(userId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -72,6 +72,13 @@ class ChatService {
             })));
         });
     }
+    /**
+     * @function create
+     * @param userId {string}
+     * @param contactId {string}
+     * @description Crea un chat
+     * @returns {Promise<Chats | undefined>}
+     */
     create(userId, contactId) {
         return __awaiter(this, void 0, void 0, function* () {
             const chatInCommon = yield this.chatRepository.getChatId(userId, contactId);
@@ -80,6 +87,11 @@ class ChatService {
             }
         });
     }
+    /**
+     * @function delete
+     * @description Elimina un chat
+     * @returns {Promise<void>}
+     */
     delete() {
         this.chatRepository.delete();
     }
