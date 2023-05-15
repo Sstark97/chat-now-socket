@@ -9,10 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * @class UserPrismaRepository
+ * @description Repositorio de usuarios
+ * @property {UserRepository} userRepository - Repositorio de usuarios
+ */
 class UserPrismaRepository {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
+    /**
+     * @function getUserInfo
+     * @param userId{string}
+     * @description Obtiene la información de un usuario
+     * @returns {Promise<UserNotify | null>} Información del usuario
+     */
     getUserInfo(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.userRepository.getUserInfo(userId);

@@ -10,10 +10,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
+/**
+ * @class ChatPrismaRepository
+ * @description Repositorio de chats
+ * @property {PrismaClient} prisma - Cliente de Prisma
+ */
 class ChatPrismaRepository {
     constructor() {
         this.prisma = new client_1.PrismaClient();
     }
+    /**
+     * @function sendMessage
+     * @param userId {string}
+     * @param contactId {string}
+     * @param message {string}
+     * @description Envía un mensaje
+     * @returns {Promise<Message>}
+     */
     sendMessage(userId, contactId, message) {
         return __awaiter(this, void 0, void 0, function* () {
             const chat = yield this.getChatId(userId, contactId);
@@ -27,6 +40,13 @@ class ChatPrismaRepository {
             });
         });
     }
+    /**
+     * @function create
+     * @param userId {string}
+     * @param contactId {string}
+     * @description Crea un chat
+     * @returns {Promise<Chat | null>}
+     */
     create(userId, contactId) {
         return this.prisma.chat.create({
             data: {
@@ -38,6 +58,11 @@ class ChatPrismaRepository {
             },
         });
     }
+    /**
+     * @function delete
+     * @description Elimina los chats sin mensajes
+     * @returns {Promise<void>}
+     */
     delete() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.prisma.chat.deleteMany({
@@ -45,11 +70,23 @@ class ChatPrismaRepository {
             });
         });
     }
+    /**
+     * @function getMessages
+     * @param chatId {number}
+     * @description Obtiene los mensajes de un chat
+     * @returns {Promise<Message[]>}
+     */
     getMessages(chatId) {
         return this.prisma.message.findMany({
             where: { chat_id: chatId },
         });
     }
+    /**
+     * @function getLastMessage
+     * @param chatId {number}
+     * @description Obtiene el último mensaje de un chat
+     * @returns {Promise<Message | null>}
+     */
     getLastMessage(chatId) {
         return this.prisma.message.findFirst({
             where: { chat_id: chatId },
@@ -57,6 +94,12 @@ class ChatPrismaRepository {
             select: { text: true, date: true, author_id: true },
         });
     }
+    /**
+     * @function getAllWithContact
+     * @param userId {string}
+     * @description Obtiene todos los chats con mensajes de un usuario
+     * @returns {Promise<Chat[]>}
+     */
     getAllWithContact(userId) {
         return this.prisma.chat.findMany({
             where: {
@@ -83,6 +126,12 @@ class ChatPrismaRepository {
             },
         });
     }
+    /**
+     * @function getContactName
+     * @param contactId {string}
+     * @description Obtiene el nombre de un contacto
+     * @returns {Promise<string>}
+     */
     getContactName(contactId) {
         return __awaiter(this, void 0, void 0, function* () {
             const contact = yield this.prisma.contact.findFirst({
@@ -92,6 +141,13 @@ class ChatPrismaRepository {
             return contact === null || contact === void 0 ? void 0 : contact.name;
         });
     }
+    /**
+     * @function getChatId
+     * @param userId {string}
+     * @param contactId {string}
+     * @description Obtiene el id de un chat
+     * @returns {Promise<{chat_id: number} | null>}
+     */
     getChatId(userId, contactId) {
         return this.prisma.chatUsers.findFirst({
             where: {
